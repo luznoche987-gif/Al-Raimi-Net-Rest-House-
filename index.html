@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>استراحة الريمي نت</title>
+<style>
+:root {
+  --primary-color: #00a4dc;
+  --secondary-color: #ff6b00;
+  --background-color: #0f1c2d;
+  --card-background: #1a2d3f;
+  --text-color: #ffffff;
+  --hover-scale: 1.05;
+  --section-spacing: 25px;
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 60px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+  background: linear-gradient(135deg, var(--background-color) 0%, #152536 100%);
+  color: var(--text-color);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: margin-right 0.3s ease;
+}
+
+body.sidebar-open {
+  margin-right: var(--sidebar-width);
+}
+
+/* الهيدر */
+header {
+  background: linear-gradient(to right, #0a1523, var(--card-background));
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  position: relative;
+}
+
+.logo h1 {
+  margin: 0;
+  font-size: 1.8em;
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* شريط البحث */
+.search-container {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+  margin: 0 20px;
+}
+
+.search-box {
+  width: 100%;
+  padding: 10px 45px 10px 15px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+  font-size: 1em;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.search-box:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.search-button {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 1.2em;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.search-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* نتائج البحث */
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--card-background);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 101;
+  display: none;
+}
+
+.search-results.active {
+  display: block;
+}
+
+.search-result-item {
+  display: flex;
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: background 0.3s;
+  gap: 12px;
+  align-items: center;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.search-result-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.search-result-img {
+  width: 50px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.search-result-info {
+  flex: 1;
+}
+
+.search-result-title {
+  font-weight: bold;
+  margin: 0 0 5px 0;
+  font-size: 0.95em;
+}
+
+.search-result-meta {
+  display: flex;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85em;
+  gap: 10px;
+}
+
+.search-result-type {
+  background: var(--primary-color);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75em;
+}
+
+.no-results {
+  padding: 20px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* الشريط الجانبي */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: calc(-1 * var(--sidebar-width));
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: linear-gradient(to bottom, #0a1523, var(--card-background));
+  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  transition: right 0.3s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar.open {
+  right: 0;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 1.3em;
+  color: var(--primary-color);
+}
+
+.sidebar-toggle {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.2em;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background 0.3s;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-content {
+  padding: 15px;
+}
+
+.sidebar-section {
+  margin-bottom: 25px;
+}
+
+.sidebar-section h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.1em;
+  color: var(--secondary-color);
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu li {
+  margin-bottom: 8px;
+}
+
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  color: var(--text-color);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.3s;
+  gap: 10px;
+}
+
+.sidebar-menu a:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-menu a.active {
+  background: var(--primary-color);
+  font-weight: bold;
+}
+
+.sidebar-menu i {
+  font-size: 1.2em;
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar-footer {
+  padding: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.85em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* التنقل الرئيسي */
+.main-nav {
+  display: flex;
+  background: rgba(26, 45, 63, 0.8);
+  padding: 12px 20px;
+  overflow-x: auto;
+  gap: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.main-nav button {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 1em;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 20px;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+}
+
+.main-nav button.active {
+  background-color: var(--primary-color);
+  font-weight: bold;
+}
+
+.main-nav button:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* الشاشات */
+.screen { 
+  display: none; 
+  padding: 20px;
+  animation: fadeIn 0.5s ease;
+}
+
+.screen.active { 
+  display: block; 
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* الأقسام */
+.section {
+  margin-bottom: var(--section-spacing);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+.view-all {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 0.9em;
+  transition: color 0.3s;
+}
+
+.view-all:hover {
+  color: var(--secondary-color);
+  text-decoration: underline;
+}
+
+/* الشبكات */
+.grid {
+  display: flex;
+  overflow-x: auto;
+  gap: 20px;
+  padding: 10px 5px;
+  scroll-behavior: smooth;
+}
+
+.grid::-webkit-scrollbar { 
+  height: 8px;
+}
+
+.grid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.grid::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4px;
+}
+
+/* العناصر */
+.item {
+  min-width: 180px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--card-background);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.item img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  display: block;
+}
+
+.item:hover { 
+  transform: scale(var(--hover-scale)); 
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.item-content {
+  padding: 12px;
+}
+
+.item-title {
+  font-weight: bold;
+  margin: 0 0 5px 0;
+  font-size: 0.95em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-meta {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85em;
+}
+
+/* استراحة الأفلام */
+.continue-watching {
+  background: linear-gradient(135deg, var(--card-background), #223a52);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: var(--section-spacing);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  border-left: 4px solid var(--secondary-color);
+}
+
+.continue-watching h3 {
+  margin-top: 0;
+  color: var(--secondary-color);
+  font-size: 1.3em;
+}
+
+.continue-item {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  transition: background 0.3s;
+}
+
+.continue-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.continue-item img {
+  width: 80px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.continue-info h4 {
+  margin: 0 0 5px 0;
+  font-size: 1.1em;
+}
+
+.continue-info p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9em;
+}
+
+.progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background: var(--secondary-color);
+  width: 65%; /* مثال للتقدم */
+}
+
+/* شاشة التفاصيل */
+#detailsScreen {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.details-header {
+  display: flex;
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+.details-poster {
+  flex: 0 0 300px;
+}
+
+.details-poster img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.details-info {
+  flex: 1;
+}
+
+.details-title {
+  font-size: 2.2em;
+  margin: 0 0 15px 0;
+  font-weight: 700;
+}
+
+.details-meta {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.details-overview {
+  font-size: 1.1em;
+  line-height: 1.7;
+  margin-bottom: 25px;
+}
+
+.details-actions {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.action-btn {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.play-btn {
+  background: var(--primary-color);
+  color: white;
+}
+
+.play-btn:hover {
+  background: #0088c0;
+}
+
+.fav-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.fav-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.fav-btn.active {
+  background: var(--secondary-color);
+}
+
+/* شاشة البث الموحد */
+#streamScreen {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.stream-container {
+  background: var(--card-background);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  margin-bottom: 20px;
+}
+
+.stream-player {
+  width: 100%;
+  height: 400px;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2em;
+}
+
+.stream-info {
+  padding: 20px;
+}
+
+.stream-title {
+  font-size: 1.8em;
+  margin: 0 0 15px 0;
+  font-weight: 600;
+}
+
+.stream-meta {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.stream-description {
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.stream-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.stream-quality {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.quality-btn {
+  padding: 8px 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.quality-btn.active {
+  background: var(--primary-color);
+}
+
+.quality-btn:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* شاشة البحث */
+#searchScreen {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.search-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.search-results-header h2 {
+  margin: 0;
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+.search-query {
+  color: var(--secondary-color);
+  font-weight: bold;
+}
+
+.search-filters {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 8px 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 20px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.9em;
+}
+
+.filter-btn.active {
+  background: var(--primary-color);
+  font-weight: bold;
+}
+
+.filter-btn:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* شريط التنقل السفلي */
+.bottom-nav {
+  display: flex;
+  justify-content: space-around;
+  background: var(--card-background);
+  padding: 12px 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8em;
+  text-decoration: none;
+  transition: color 0.3s;
+  padding: 5px 10px;
+  border-radius: 8px;
+}
+
+.nav-item.active {
+  color: var(--primary-color);
+}
+
+.nav-item i {
+  font-size: 1.4em;
+  margin-bottom: 4px;
+}
+
+/* شاشة الإعدادات */
+.settings-section {
+  background: var(--card-background);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.settings-section h3 {
+  margin-top: 0;
+  color: var(--primary-color);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+}
+
+.settings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.settings-item:last-child {
+  border-bottom: none;
+}
+
+.settings-item .label {
+  font-weight: 500;
+}
+
+.settings-item .value {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.version-info {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 30px;
+  font-size: 0.9em;
+}
+
+/* التجاوب */
+@media (max-width: 768px) {
+  .search-container {
+    max-width: 250px;
+    margin: 0 10px;
+  }
+  
+  .details-header {
+    flex-direction: column;
+  }
+  
+  .details-poster {
+    flex: none;
+    max-width: 250px;
+    margin: 0 auto;
+  }
+  
+  .item {
+    min-width: 140px;
+  }
+  
+  .item img {
+    height: 200px;
+  }
+  
+  .main-nav {
+    padding: 10px 15px;
+    gap: 10px;
+  }
+  
+  .main-nav button {
+    padding: 6px 12px;
+    font-size: 0.9em;
+  }
+  
+  .stream-player {
+    height: 250px;
+  }
+  
+  .sidebar {
+    width: 85%;
+    right: -85%;
+  }
+  
+  body.sidebar-open {
+    margin-right: 85%;
+  }
+  
+  .search-results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .screen {
+    padding: 15px;
+  }
+  
+  .item {
+    min-width: 120px;
+  }
+  
+  .item img {
+    height: 170px;
+  }
+  
+  .section-header h2 {
+    font-size: 1.3em;
+  }
+  
+  .details-title {
+    font-size: 1.8em;
+  }
+  
+  .action-btn {
+    padding: 10px 15px;
+    font-size: 0.9em;
+  }
+  
+  .stream-player {
+    height: 200px;
+  }
+  
+  .search-container {
+    max-width: 180px;
+  }
+  
+  .search-results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+  }
+}
+
+/* حالات التحميل والخطأ */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2em;
+}
+
+.loading::after {
+  content: "";
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-left: 4px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error {
+  color: var(--secondary-color);
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 107, 0, 0.1);
+  border-radius: 8px;
+  margin: 10px 0;
+  border: 1px solid rgba(255, 107, 0, 0.3);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-state p {
+  margin-top: 10px;
+}
+
+/* زر فتح الشريط الجانبي */
+.sidebar-trigger {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px 0 0 6px;
+  padding: 12px 8px;
+  cursor: pointer;
+  z-index: 98;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.sidebar-trigger:hover {
+  background: #0088c0;
+  padding-right: 12px;
+}
+
+/* طبقة التعتيم عند فتح الشريط */
+.overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 97;
+  display: none;
+}
+
+.overlay.active {
+  display: block;
+}
+
+/* إشعار المطور */
+.developer-notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, var(--card-background), #223a52);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 101;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  border-top: 4px solid var(--primary-color);
+  animation: fadeIn 0.5s ease;
+}
+
+.developer-notification h3 {
+  margin-top: 0;
+  color: var(--secondary-color);
+  font-size: 1.4em;
+}
+
+.developer-notification p {
+  margin: 15px 0;
+  line-height: 1.6;
+}
+
+.developer-notification .close-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
+
+.developer-notification .close-btn:hover {
+  background: #0088c0;
+}
+
+.developer-info {
+  background: var(--card-background);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.developer-info h3 {
+  color: var(--primary-color);
+  margin-top: 0;
+}
+
+.developer-info p {
+  margin: 10px 0;
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<!-- طبقة التعتيم -->
+<div class="overlay" id="overlay"></div>
+
+<!-- إشعار المطور -->
+<div class="developer-notification" id="developerNotification">
+  <h3>مرحباً بك في استراحة الريمي نت</h3>
+  <p>تم تطوير هذا التطبيق بواسطة:</p>
+  <p><strong>عبد الوهاب عبد الواحد الريمي</strong></p>
+  <p>استمتع بمحتوى متنوع من الأفلام والمسلسلات</p>
+  <button class="close-btn" id="closeNotification">موافق</button>
+</div>
+
+<!-- الشريط الجانبي -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h2>القائمة الجانبية</h2>
+    <button class="sidebar-toggle" id="sidebarClose">✕</button>
+  </div>
+  
+  <div class="sidebar-content">
+    <div class="sidebar-section">
+      <h3>التصنيفات</h3>
+      <ul class="sidebar-menu">
+        <li><a href="#" data-screen="homeScreen" class="active"><i>🏠</i> الرئيسية</a></li>
+        <li><a href="#" data-screen="moviesScreen"><i>🎬</i> استراحة الأفلام</a></li>
+        <li><a href="#" data-screen="turkishSeriesScreen"><i>🇹🇷</i> مسلسلات تركية</a></li>
+        <li><a href="#" data-screen="koreanSeriesScreen"><i>🇰🇷</i> مسلسلات كورية</a></li>
+        <li><a href="#" data-screen="foreignSeriesScreen"><i>🌎</i> مسلسلات أجنبية</a></li>
+        <li><a href="#" data-screen="arabicSeriesScreen"><i>🇸🇦</i> مسلسلات عربية</a></li>
+        <li><a href="#" data-screen="religiousScreen"><i>🕌</i> الاستراحة الدينية</a></li>
+        <li><a href="#" data-screen="streamScreen"><i>📺</i> البث الموحد</a></li>
+        <li><a href="#" data-screen="searchScreen"><i>🔍</i> البحث</a></li>
+      </ul>
+    </div>
+    
+    <div class="sidebar-section">
+      <h3>المفضلة</h3>
+      <ul class="sidebar-menu">
+        <li><a href="#"><i>❤️</i> الأفلام المفضلة</a></li>
+        <li><a href="#"><i>📺</i> المسلسلات المفضلة</a></li>
+        <li><a href="#"><i>⭐</i> الأعلى تقييماً</a></li>
+      </ul>
+    </div>
+    
+    <div class="sidebar-section">
+      <h3>الإعدادات</h3>
+      <ul class="sidebar-menu">
+        <li><a href="#" data-screen="settingsScreen"><i>⚙️</i> الإعدادات العامة</a></li>
+        <li><a href="#"><i>🎛️</i> إعدادات التشغيل</a></li>
+        <li><a href="#"><i>🔒</i> الخصوصية</a></li>
+      </ul>
+    </div>
+    
+    <div class="sidebar-footer">
+      <p>استراحة الريمي نت</p>
+      <p>Version 4.9.1.80</p>
+    </div>
+  </div>
+</aside>
+
+<header>
+  <div class="logo" id="logo">
+    <h1>استراحة الريمي نت</h1>
+  </div>
+  
+  <!-- شريط البحث -->
+  <div class="search-container">
+    <input type="text" class="search-box" id="searchBox" placeholder="ابحث عن أفلام أو مسلسلات...">
+    <button class="search-button" id="searchButton">🔍</button>
+    
+    <!-- نتائج البحث المنسدلة -->
+    <div class="search-results" id="searchResults">
+      <!-- سيتم ملؤها ديناميكياً -->
+    </div>
+  </div>
+  
+  <div class="user-menu">
+    <div class="user-avatar">م</div>
+  </div>
+</header>
+
+<nav class="main-nav">
+  <button data-screen="homeScreen" class="active">الرئيسية</button>
+  <button data-screen="moviesScreen">استراحة الأفلام</button>
+  <button data-screen="turkishSeriesScreen">مسلسلات تركية</button>
+  <button data-screen="koreanSeriesScreen">مسلسلات كورية</button>
+  <button data-screen="foreignSeriesScreen">مسلسلات أجنبية</button>
+  <button data-screen="arabicSeriesScreen">مسلسلات عربية</button>
+  <button data-screen="religiousScreen">الاستراحة الدينية</button>
+  <button data-screen="streamScreen">البث الموحد</button>
+  <button data-screen="searchScreen">البحث</button>
+</nav>
+
+<!-- الشاشات -->
+<div id="homeScreen" class="screen active">
+  <!-- استئناف المشاهدة -->
+  <div class="continue-watching">
+    <h3>استئناف المشاهدة</h3>
+    <div id="continueWatchingList">
+      <div class="loading">جاري تحميل المحتوى...</div>
+    </div>
+  </div>
+
+  <!-- أقسام المحتوى -->
+  <section class="section">
+    <div class="section-header">
+      <h2>استراحة الأفلام</h2>
+      <a href="#" class="view-all">الأحدث &gt;</a>
+    </div>
+    <div id="movies" class="grid">
+      <div class="loading">جاري التحميل...</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2>مسلسلات تركية</h2>
+      <a href="#" class="view-all">الأحدث &gt;</a>
+    </div>
+    <div id="turkishSeries" class="grid">
+      <div class="loading">جاري التحميل...</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2>مسلسلات كورية</h2>
+      <a href="#" class="view-all">الأحدث &gt;</a>
+    </div>
+    <div id="koreanSeries" class="grid">
+      <div class="loading">جاري التحميل...</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2>مسلسلات أجنبية</h2>
+      <a href="#" class="view-all">الأحدث &gt;</a>
+    </div>
+    <div id="foreignSeries" class="grid">
+      <div class="loading">جاري التحميل...</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2>مسلسلات عربية</h2>
+      <a href="#" class="view-all">الأحدث &gt;</a>
+    </div>
+    <div id="arabicSeries" class="grid">
+      <div class="loading">جاري التحميل...</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <h2>الاستراحة الدينية</h2>
+      <a href="#" class="view-all">الأحدث &gt;</a>
+    </div>
+    <div id="religious" class="grid">
+      <div class="loading">جاري التحميل...</div>
+    </div>
+  </section>
+</div>
+
+<div id="moviesScreen" class="screen">
+  <section class="section">
+    <div class="section-header">
+      <h2>استراحة الأفلام</h2>
+    </div>
+    <div id="moviesContent" class="grid">
+      <div class="loading">جاري التحميل...</div>
+    </div>
+  </section>
+</div>
+
+<div id="turkishSeriesScreen" class="screen">
+  <section class="section">
+    <div class="section-header">
+      <h2>مسلسلات تركية</h2>
+    </div>
+    <div id="turkishSeriesContent" class="grid">
+      <div class="loading">جاري التحميل...</div>
+    </div>
+  </section>
+</div>
+
+<div id="koreanSeriesScreen" class="screen">
+  <section class="section">
+    <div class="section-header">
+      <h2>مسلسلات كورية</h2>
+    </div>
+    <div id="koreanSeriesContent" class="grid">
+      <div class="loading">جاري التحميل...</div>
+    </div>
+  </section>
+</div>
+
+<div id="foreignSeriesScreen" class="screen">
+  <section class="section">
+    <div class="section-header">
+      <h2>مسلسلات أجنبية</h2>
+    </div>
+    <div id="foreignSeriesContent" class="grid">
+      <div class="loading">جاري التحميل...</div>
+    </div>
+  </section>
+</div>
+
+<div id="arabicSeriesScreen" class="screen">
+  <section class="section">
+    <div class="section-header">
+      <h2>مسلسلات عربية</h2>
+    </div>
+    <div id="arabicSeriesContent" class="grid">
+      <div class="loading">جاري التحميل...</div>
+    </div>
+  </section>
+</div>
+
+<div id="religiousScreen" class="screen">
+  <section class="section">
+    <div class="section-header">
+      <h2>الاستراحة الدينية</h2>
+    </div>
+    <div id="religiousContent" class="grid">
+      <div class="loading">جاري التحميل...</div>
+    </div>
+  </section>
+</div>
+
+<div id="streamScreen" class="screen">
+  <section class="section">
+    <div class="section-header">
+      <h2>البث الموحد</h2>
+    </div>
+    <div class="stream-container">
+      <div class="stream-player">
+        <div>مشغل البث الموحد - سيتم عرض البث هنا</div>
+      </div>
+      <div class="stream-info">
+        <h2 class="stream-title">البث الموحد عبر السيرفر</h2>
+        <div class="stream-meta">
+          <span>مباشر الآن</span>
+          <span>1.2K مشاهد</span>
+          <span>HD</span>
+        </div>
+        <p class="stream-description">
+          هذا هو البث الموحد عبر سيرفر استراحة الريمي نت. يمكنك مشاهدة المحتوى المباشر من خلال هذا المشغل الموحد.
+        </p>
+        <div class="stream-actions">
+          <button class="action-btn play-btn">
+            ▶ تشغيل البث
+          </button>
+          <button class="action-btn fav-btn">
+            ♡ أضف إلى المفضلة
+          </button>
+        </div>
+        <div class="stream-quality">
+          <button class="quality-btn active">HD</button>
+          <button class="quality-btn">SD</button>
+          <button class="quality-btn">Low</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- شاشة البحث -->
+<div id="searchScreen" class="screen">
+  <div class="search-results-header">
+    <h2>نتائج البحث</h2>
+    <div class="search-query" id="searchQueryDisplay"></div>
+  </div>
+  
+  <div class="search-filters" id="searchFilters">
+    <button class="filter-btn active" data-type="all">الكل</button>
+    <button class="filter-btn" data-type="Movie">أفلام</button>
+    <button class="filter-btn" data-type="Series">مسلسلات</button>
+    <button class="filter-btn" data-type="Turkish">تركية</button>
+    <button class="filter-btn" data-type="Korean">كورية</button>
+    <button class="filter-btn" data-type="Foreign">أجنبية</button>
+    <button class="filter-btn" data-type="Arabic">عربية</button>
+    <button class="filter-btn" data-type="Religious">دينية</button>
+  </div>
+  
+  <div id="searchResultsContent" class="search-results-grid">
+    <div class="empty-state">
+      <p>استخدم شريط البحث أعلاه للبحث عن المحتوى</p>
+    </div>
+  </div>
+</div>
+
+<div id="settingsScreen" class="screen">
+  <div class="developer-info">
+    <h3>معلومات المطور</h3>
+    <p><strong>تم تطوير هذا التطبيق بواسطة:</strong></p>
+    <p>عبد الوهاب عبد الواحد الريمي</p>
+    <p>جميع الحقوق محفوظة © 2025</p>
+  </div>
+
+  <div class="settings-section">
+    <h3>الإعدادات</h3>
+    <div class="settings-item">
+      <span class="label">الإصدار</span>
+      <span class="value">4.9.1.80</span>
+    </div>
+    <div class="settings-item">
+      <span class="label">استراحة الريمي نت</span>
+      <span class="value">تشغيل</span>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <h3>عام</h3>
+    <div class="settings-item">
+      <span class="label">لوحة المفاتيح وجهاز التحكم عن بعد</span>
+      <span class="value">مفعل</span>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <h3>التفضيلات</h3>
+    <div class="settings-item">
+      <span class="label">انقر هنا للدخول الى الاستراحة</span>
+      <span class="value">&gt;</span>
+    </div>
+    <div class="settings-item">
+      <span class="label">عرض</span>
+      <span class="value">تلقائي</span>
+    </div>
+    <div class="settings-item">
+      <span class="label">الشاشة الرئيسية</span>
+      <span class="value">مخصصة</span>
+    </div>
+    <div class="settings-item">
+      <span class="label">تشغيل</span>
+      <span class="value">مباشر</span>
+    </div>
+    <div class="settings-item">
+      <span class="label">ترجمات</span>
+      <span class="value">عربية</span>
+    </div>
+    <div class="settings-item">
+      <span class="label">إشعارات</span>
+      <span class="value">مفعل</span>
+    </div>
+  </div>
+
+  <div class="version-info">
+    Version 4.9.1.80 | استراحة الريمي نت
+  </div>
+</div>
+
+<div id="detailsScreen" class="screen">
+  <div class="details-header">
+    <div class="details-poster">
+      <img id="detailsPoster" src="" alt="">
+    </div>
+    <div class="details-info">
+      <h1 id="detailsTitle" class="details-title"></h1>
+      <div class="details-meta">
+        <span id="detailsYear"></span>
+        <span id="detailsRating"></span>
+        <span id="detailsDuration"></span>
+      </div>
+      <p id="detailsOverview" class="details-overview"></p>
+      <div class="details-actions">
+        <button class="action-btn play-btn" id="playBtn">
+          ▶ تشغيل
+        </button>
+        <button class="action-btn fav-btn" id="favBtn">
+          ♡ أضف إلى المفضلة
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- شريط التنقل السفلي -->
+<nav class="bottom-nav">
+  <a href="#" class="nav-item active" data-screen="homeScreen">
+    <i>🏠</i>
+    <span>الرئيسية</span>
+  </a>
+  <a href="#" class="nav-item" data-screen="moviesScreen">
+    <i>🎬</i>
+    <span>أفلام</span>
+  </a>
+  <a href="#" class="nav-item" data-screen="turkishSeriesScreen">
+    <i>🇹🇷</i>
+    <span>تركية</span>
+  </a>
+  <a href="#" class="nav-item" data-screen="koreanSeriesScreen">
+    <i>🇰🇷</i>
+    <span>كورية</span>
+  </a>
+  <a href="#" class="nav-item" data-screen="foreignSeriesScreen">
+    <i>🌎</i>
+    <span>أجنبية</span>
+  </a>
+  <a href="#" class="nav-item" data-screen="arabicSeriesScreen">
+    <i>🇸🇦</i>
+    <span>عربية</span>
+  </a>
+  <a href="#" class="nav-item" data-screen="religiousScreen">
+    <i>🕌</i>
+    <span>دينية</span>
+  </a>
+  <a href="#" class="nav-item" data-screen="streamScreen">
+    <i>📺</i>
+    <span>بث موحد</span>
+  </a>
+  <a href="#" class="nav-item" data-screen="searchScreen">
+    <i>🔍</i>
+    <span>بحث</span>
+  </a>
+</nav>
+
+<script>
+// إعدادات السيرفر - يجب استبدالها بإعداداتك الخاصة
+const apiKey = "YOUR_API_KEY_HERE";
+const serverUrl = "http://YOUR_EMBY_SERVER:8096";
+
+// أقسام الصفحة الرئيسية
+const sections = {
+  movies: {type:"Movie", genre:""},
+  turkishSeries: {type:"Series", genre:"Turkish"},
+  koreanSeries: {type:"Series", genre:"Korean"},
+  foreignSeries: {type:"Series", genre:"Foreign"},
+  arabicSeries: {type:"Series", genre:"Arabic"},
+  religious: {type:"Movie", genre:"Religious"}
+};
+
+// حالة التطبيق
+const appState = {
+  currentScreen: 'homeScreen',
+  favorites: JSON.parse(localStorage.getItem('embyFavorites')) || [],
+  continueWatching: JSON.parse(localStorage.getItem('embyContinue')) || [],
+  sidebarOpen: false,
+  notificationShown: localStorage.getItem('notificationShown') || false,
+  searchResults: [],
+  searchQuery: '',
+  searchFilter: 'all'
+};
+
+// وظائف التنقل
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  
+  // تحديث التنقل الرئيسي
+  document.querySelectorAll('.main-nav button').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.main-nav button[data-screen="${screenId}"]`)?.classList.add('active');
+  
+  // تحديث التنقل السفلي
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+  document.querySelector(`.nav-item[data-screen="${screenId}"]`)?.classList.add('active');
+  
+  // تحديث الشريط الجانبي
+  document.querySelectorAll('.sidebar-menu a').forEach(item => item.classList.remove('active'));
+  document.querySelector(`.sidebar-menu a[data-screen="${screenId}"]`)?.classList.add('active');
+  
+  appState.currentScreen = screenId;
+  
+  // إغلاق الشريط الجانبي عند اختيار شاشة (على الأجهزة المحمولة)
+  if (window.innerWidth <= 768) {
+    closeSidebar();
+  }
+  
+  // إغلاق نتائج البحث المنسدلة
+  hideSearchResults();
+}
+
+// وظائف الشريط الجانبي
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('active');
+  document.body.classList.add('sidebar-open');
+  appState.sidebarOpen = true;
+}
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('active');
+  document.body.classList.remove('sidebar-open');
+  appState.sidebarOpen = false;
+}
+
+function toggleSidebar() {
+  if (appState.sidebarOpen) {
+    closeSidebar();
+  } else {
+    openSidebar();
+  }
+}
+
+// إعداد التنقل
+document.querySelectorAll('.main-nav button, .nav-item, .sidebar-menu a').forEach(element => {
+  element.addEventListener('click', (e) => {
+    e.preventDefault();
+    const screenId = element.dataset.screen;
+    if (screenId) showScreen(screenId);
+  });
+});
+
+// إعداد الشريط الجانبي - فتح من خلال النقر على الشعار
+document.getElementById('logo').addEventListener('click', openSidebar);
+document.getElementById('sidebarClose').addEventListener('click', closeSidebar);
+document.getElementById('overlay').addEventListener('click', closeSidebar);
+
+// إغلاق الشريط الجانبي عند الضغط على زر Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && appState.sidebarOpen) {
+    closeSidebar();
+  }
+});
+
+// إعداد إشعار المطور
+function showDeveloperNotification() {
+  if (!appState.notificationShown) {
+    document.getElementById('developerNotification').style.display = 'block';
+    
+    // إخفاء الإشعار بعد 30 ثانية
+    setTimeout(() => {
+      hideDeveloperNotification();
+    }, 30000);
+  }
+}
+
+function hideDeveloperNotification() {
+  document.getElementById('developerNotification').style.display = 'none';
+  appState.notificationShown = true;
+  localStorage.setItem('notificationShown', 'true');
+}
+
+document.getElementById('closeNotification').addEventListener('click', hideDeveloperNotification);
+
+// وظائف البحث
+function performSearch(query) {
+  if (!query || query.trim().length < 2) {
+    hideSearchResults();
+    return;
+  }
+  
+  appState.searchQuery = query.trim();
+  
+  // عرض مؤشر التحميل
+  const resultsContainer = document.getElementById('searchResults');
+  resultsContainer.innerHTML = '<div class="loading">جاري البحث...</div>';
+  showSearchResults();
+  
+  // البحث في خادم Emby
+  fetchSearchResults(query);
+}
+
+async function fetchSearchResults(query) {
+  try {
+    const url = `${serverUrl}/emby/Items?Recursive=true&IncludeItemTypes=Movie,Series&SearchTerm=${encodeURIComponent(query)}&Limit=20`;
+    const res = await fetch(url, {headers: {"X-Emby-Token": apiKey}});
+    
+    if (!res.ok) {
+      throw new Error(`خطأ في جلب نتائج البحث: ${res.status}`);
+    }
+    
+    const data = await res.json();
+    appState.searchResults = data.Items || [];
+    
+    displaySearchResults(appState.searchResults);
+  } catch(e) {
+    console.error('Error searching', e);
+    const resultsContainer = document.getElementById('searchResults');
+    resultsContainer.innerHTML = '<div class="error">خطأ في البحث. يرجى المحاولة مرة أخرى.</div>';
+  }
+}
+
+function displaySearchResults(results) {
+  const resultsContainer = document.getElementById('searchResults');
+  
+  if (!results || results.length === 0) {
+    resultsContainer.innerHTML = '<div class="no-results">لا توجد نتائج للبحث</div>';
+    return;
+  }
+  
+  resultsContainer.innerHTML = '';
+  
+  results.slice(0, 8).forEach(item => {
+    const imgUrl = item.ImageTags && item.ImageTags.Primary 
+      ? `${serverUrl}/emby/Items/${item.Id}/Images/Primary?maxHeight=100&tag=${item.ImageTags.Primary}&quality=90`
+      : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNzAiIHZpZXdCb3g9IjAgMCA1MCA3MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjMWEyZDNmIi8+Cjx0ZXh0IHg9IjI1IiB5PSIzNSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+PHRzcGFuIHg9IjI1IiB5PSIzNSIgZHk9IjAiPuWbvuWDjzwvdHNwYW4+PC90ZXh0Pgo8L3N2Zz4K';
+    
+    const resultItem = document.createElement('div');
+    resultItem.className = 'search-result-item';
+    resultItem.innerHTML = `
+      <img src="${imgUrl}" alt="${item.Name}" class="search-result-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNzAiIHZpZXdCb3g9IjAgMCA1MCA3MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjMWEyZDNmIi8+Cjx0ZXh0IHg9IjI1IiB5PSIzNSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+PHRzcGFuIHg9IjI1IiB5PSIzNSIgZHk9IjAiPuWbvuWDjzwvdHNwYW4+PC90ZXh0Pgo8L3N2Zz4K';">
+      <div class="search-result-info">
+        <div class="search-result-title">${item.Name}</div>
+        <div class="search-result-meta">
+          <span>${item.ProductionYear || ''}</span>
+          <span class="search-result-type">${item.Type === 'Movie' ? 'فيلم' : 'مسلسل'}</span>
+        </div>
+      </div>
+    `;
+    
+    resultItem.addEventListener('click', () => {
+      showItemDetails(item, item.Type);
+      hideSearchResults();
+    });
+    
+    resultsContainer.appendChild(resultItem);
+  });
+}
+
+function showSearchResults() {
+  document.getElementById('searchResults').classList.add('active');
+}
+
+function hideSearchResults() {
+  document.getElementById('searchResults').classList.remove('active');
+}
+
+function showSearchScreen(query) {
+  appState.searchQuery = query;
+  document.getElementById('searchQueryDisplay').textContent = `"${query}"`;
+  
+  // تطبيق الفلتر الحالي على نتائج البحث
+  applySearchFilter(appState.searchFilter);
+  
+  // عرض شاشة البحث
+  showScreen('searchScreen');
+}
+
+function applySearchFilter(filterType) {
+  appState.searchFilter = filterType;
+  
+  // تحديث أزرار الفلاتر
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.type === filterType);
+  });
+  
+  // تصفية النتائج
+  let filteredResults = [...appState.searchResults];
+  
+  if (filterType !== 'all') {
+    if (filterType === 'Movie' || filterType === 'Series') {
+      filteredResults = appState.searchResults.filter(item => item.Type === filterType);
+    } else {
+      // تصفية حسب النوع (تركية، كورية، إلخ)
+      filteredResults = appState.searchResults.filter(item => 
+        item.Genres && item.Genres.some(genre => 
+          genre.toLowerCase().includes(filterType.toLowerCase())
+        )
+      );
+    }
+  }
+  
+  displaySearchScreenResults(filteredResults);
+}
+
+function displaySearchScreenResults(results) {
+  const container = document.getElementById('searchResultsContent');
+  
+  if (!results || results.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <p>لا توجد نتائج تطابق البحث "${appState.searchQuery}"</p>
+        <p>جرب استخدام كلمات بحث مختلفة أو أزالة بعض الفلاتر</p>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = '';
+  
+  results.forEach(item => {
+    const imgUrl = item.ImageTags && item.ImageTags.Primary 
+      ? `${serverUrl}/emby/Items/${item.Id}/Images/Primary?maxHeight=300&tag=${item.ImageTags.Primary}&quality=90`
+      : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDE4MCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMjUwIiBmaWxsPSIjMWEyZDNmIi8+Cjx0ZXh0IHg9IjkwIiB5PSIxMjUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjx0c3BhbiB4PSI5MCIgeT0iMTI1IiBkeT0iMCI+5pel5pyfPC90c3Bhbj48L3RleHQ+Cjwvc3ZnPgo=';
+    
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `
+      <img src="${imgUrl}" alt="${item.Name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDE4MCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMjUwIiBmaWxsPSIjMWEyZDNmIi8+Cjx0ZXh0IHg9IjkwIiB5PSIxMjUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjx0c3BhbiB4PSI5MCIgeT0iMTI1IiBkeT0iMCI+5pel5pyfPC90c3Bhbj48L3RleHQ+Cjwvc3ZnPgo=';">
+      <div class="item-content">
+        <div class="item-title">${item.Name}</div>
+        <div class="item-meta">
+          <span>${item.ProductionYear || ''}</span>
+          <span>${item.Type === 'Movie' ? 'فيلم' : 'مسلسل'}</span>
+        </div>
+      </div>
+    `;
+    
+    div.addEventListener('click', () => showItemDetails(item, item.Type));
+    container.appendChild(div);
+  });
+}
+
+// إعداد البحث
+document.getElementById('searchBox').addEventListener('input', function() {
+  const query = this.value;
+  if (query.length >= 2) {
+    performSearch(query);
+  } else {
+    hideSearchResults();
+  }
+});
+
+document.getElementById('searchButton').addEventListener('click', function() {
+  const query = document.getElementById('searchBox').value;
+  if (query.length >= 2) {
+    showSearchScreen(query);
+  }
+});
+
+document.getElementById('searchBox').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    const query = this.value;
+    if (query.length >= 2) {
+      showSearchScreen(query);
+    }
+  }
+});
+
+// إعداد فلاتر البحث
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    applySearchFilter(this.dataset.type);
+  });
+});
+
+// إغلاق نتائج البحث عند النقر خارجها
+document.addEventListener('click', function(e) {
+  const searchContainer = document.getElementById('searchResults');
+  const searchBox = document.getElementById('searchBox');
+  
+  if (!searchContainer.contains(e.target) && e.target !== searchBox) {
+    hideSearchResults();
+  }
+});
+
+// جلب البيانات من خادم Emby
+async function fetchSection(sectionId, filter) {
+  try {
+    const container = document.getElementById(sectionId);
+    
+    let url = `${serverUrl}/emby/Items?Recursive=true&IncludeItemTypes=${filter.type}`;
+    if(filter.genre) url += `&Genres=${encodeURIComponent(filter.genre)}`;
+    
+    const res = await fetch(url, {headers: {"X-Emby-Token": apiKey}});
+    
+    if (!res.ok) {
+      throw new Error(`خطأ في جلب البيانات: ${res.status}`);
+    }
+    
+    const data = await res.json();
+    
+    // إزالة مؤشر التحميل
+    container.innerHTML = '';
+    
+    if (!data.Items || data.Items.length === 0) {
+      container.innerHTML = '<div class="empty-state"><p>لا توجد عناصر في هذا القسم</p></div>';
+      return;
+    }
+    
+    data.Items.forEach(item => {
+      const imgUrl = item.ImageTags && item.ImageTags.Primary 
+        ? `${serverUrl}/emby/Items/${item.Id}/Images/Primary?maxHeight=300&tag=${item.ImageTags.Primary}&quality=90`
+        : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDE4MCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMjUwIiBmaWxsPSIjMWEyZDNmIi8+Cjx0ZXh0IHg9IjkwIiB5PSIxMjUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjx0c3BhbiB4PSI5MCIgeT0iMTI1IiBkeT0iMCI+5pel5pyfPC90c3Bhbj48L3RleHQ+Cjwvc3ZnPgo=';
+      
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        <img src="${imgUrl}" alt="${item.Name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjI1MCIgdmlld0JveD0iMCAwIDE4MCAyNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMjUwIiBmaWxsPSIjMWEyZDNmIi8+Cjx0ZXh0IHg9IjkwIiB5PSIxMjUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjx0c3BhbiB4PSI5MCIgeT0iMTI1IiBkeT0iMCI+5pel5pyfPC90c3Bhbj48L3RleHQ+Cjwvc3ZnPgo=';">
+        <div class="item-content">
+          <div class="item-title">${item.Name}</div>
+          <div class="item-meta">
+            <span>${item.ProductionYear || ''}</span>
+            <span>${item.OfficialRating || ''}</span>
+          </div>
+        </div>
+      `;
+      
+      div.addEventListener('click', () => showItemDetails(item, filter.type));
+      container.appendChild(div);
+    });
+  } catch(e) { 
+    console.error('Error loading', sectionId, e);
+    const container = document.getElementById(sectionId);
+    container.innerHTML = '<div class="error">خطأ في تحميل المحتوى. يرجى التحقق من اتصال السيرفر.</div>';
+  }
+}
+
+// جلب محتوى "استئناف المشاهدة"
+async function fetchContinueWatching() {
+  try {
+    const container = document.getElementById('continueWatchingList');
+    
+    // هذا مثال - يمكنك تعديل الاستعلام حسب احتياجاتك
+    const url = `${serverUrl}/emby/Items?Recursive=true&IncludeItemTypes=Movie,Series&SortBy=DatePlayed&SortOrder=Descending`;
+    const res = await fetch(url, {headers: {"X-Emby-Token": apiKey}});
+    
+    if (!res.ok) {
+      throw new Error(`خطأ في جلب البيانات: ${res.status}`);
+    }
+    
+    const data = await res.json();
+    
+    // إزالة مؤشر التحميل
+    container.innerHTML = '';
+    
+    if (!data.Items || data.Items.length === 0) {
+      container.innerHTML = '<div class="empty-state"><p>لا توجد عناصر لمشاهدتها لاحقاً</p></div>';
+      return;
+    }
+    
+    // عرض أول 3 عناصر فقط
+    data.Items.slice(0, 3).forEach(item => {
+      const imgUrl = item.ImageTags && item.ImageTags.Primary 
+        ? `${serverUrl}/emby/Items/${item.Id}/Images/Primary?maxHeight=100&tag=${item.ImageTags.Primary}&quality=90`
+        : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgODAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMWEyZDNmIi8+Cjx0ZXh0IHg9IjQwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+PHRzcGFuIHg9IjQwIiB5PSI1MCIgZHk9IjAiPueXhemBjeWbvuWDjzwvdHNwYW4+PC90ZXh0Pgo8L3N2Zz4K';
+      
+      const continueItem = document.createElement('div');
+      continueItem.className = 'continue-item';
+      continueItem.innerHTML = `
+        <img src="${imgUrl}" alt="${item.Name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgODAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMWEyZDNmIi8+Cjx0ZXh0IHg9IjQwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+PHRzcGFuIHg9IjQwIiByeT0iNTAiIGR5PSIwIj7nl4XpgY3lm77lg488L3RzcGFuPjwvdGV4dD4KPC9zdmc+';">
+        <div class="continue-info">
+          <h4>${item.Name}</h4>
+          <p>${item.ProductionYear || ''}</p>
+          <div class="progress-bar">
+            <div class="progress"></div>
+          </div>
+        </div>
+      `;
+      
+      continueItem.addEventListener('click', () => showItemDetails(item, item.Type));
+      container.appendChild(continueItem);
+    });
+  } catch(e) {
+    console.error('Error loading continue watching', e);
+    const container = document.getElementById('continueWatchingList');
+    container.innerHTML = '<div class="error">خطأ في تحميل المحتوى</div>';
+  }
+}
+
+// عرض تفاصيل العنصر
+function showItemDetails(item, type) {
+  const imgUrl = item.ImageTags && item.ImageTags.Primary 
+    ? `${serverUrl}/emby/Items/${item.Id}/Images/Primary?maxHeight=450&tag=${item.ImageTags.Primary}&quality=90`
+    : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQ1MCIgdmlld0JveD0iMCAwIDMwMCA0NTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iNDUwIiBmaWxsPSIjMWEyZDNmIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMjI1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj9ibWlkZGxlIj48dHNwYW4geD0iMTUwIiB5PSIyMjUiIGR5PSIwIj7ml6XmnJ88L3RzcGFuPjwvdGV4dD4KPC9zdmc+Cg==';
+  
+  document.getElementById('detailsTitle').textContent = item.Name;
+  document.getElementById('detailsYear').textContent = item.ProductionYear || 'غير معروف';
+  document.getElementById('detailsRating').textContent = item.OfficialRating || 'غير معروف';
+  document.getElementById('detailsDuration').textContent = item.RunTimeTicks ? formatRuntime(item.RunTimeTicks) : 'غير معروف';
+  document.getElementById('detailsOverview').textContent = item.Overview || 'لا يوجد وصف متوفر.';
+  document.getElementById('detailsPoster').src = imgUrl;
+  
+  // تحديث زر المفضلة
+  const isFav = appState.favorites.some(fav => fav.Id === item.Id);
+  const favBtn = document.getElementById('favBtn');
+  favBtn.classList.toggle('active', isFav);
+  favBtn.textContent = isFav ? '❤️ تم الإضافة' : '♡ أضف إلى المفضلة';
+  
+  // إعداد زر التشغيل
+  document.getElementById('playBtn').onclick = () => playMedia(item, type);
+  
+  showScreen('detailsScreen');
+}
+
+// تشغيل الوسائط
+function playMedia(item, type) {
+  const mediaUrl = `${serverUrl}/emby/Items/${item.Id}/stream?static=true&api_key=${apiKey}`;
+  alert(`سيتم تشغيل: ${item.Name}\n\nرابط التشغيل: ${mediaUrl}`);
+  // في التطبيق الحقيقي، يمكنك استخدام عنصر video/audio هنا
+}
+
+// تنسيق مدة التشغيل
+function formatRuntime(ticks) {
+  const minutes = Math.floor(ticks / 600000000);
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  
+  if (hours > 0) {
+    return `${hours}h ${remainingMinutes}m`;
+  }
+  return `${minutes}m`;
+}
+
+// تحميل البيانات عند بدء التشغيل
+document.addEventListener('DOMContentLoaded', () => {
+  // تحميل الأقسام الرئيسية
+  fetchSection('movies', sections.movies);
+  fetchSection('turkishSeries', sections.turkishSeries);
+  fetchSection('koreanSeries', sections.koreanSeries);
+  fetchSection('foreignSeries', sections.foreignSeries);
+  fetchSection('arabicSeries', sections.arabicSeries);
+  fetchSection('religious', sections.religious);
+  
+  // تحميل شاشات الأقسام
+  fetchSection('moviesContent', sections.movies);
+  fetchSection('turkishSeriesContent', sections.turkishSeries);
+  fetchSection('koreanSeriesContent', sections.koreanSeries);
+  fetchSection('foreignSeriesContent', sections.foreignSeries);
+  fetchSection('arabicSeriesContent', sections.arabicSeries);
+  fetchSection('religiousContent', sections.religious);
+  
+  // تحميل "استئناف المشاهدة"
+  fetchContinueWatching();
+  
+  // إعداد زر المفضلة
+  document.getElementById('favBtn').addEventListener('click', function() {
+    // هذه وظيفة أساسية - تحتاج لتطويرها حسب هيكل البيانات
+    this.classList.toggle('active');
+    this.textContent = this.classList.contains('active') ? '❤️ تم الإضافة' : '♡ أضف إلى المفضلة';
+  });
+  
+  // إظهار إشعار المطور
+  showDeveloperNotification();
+});
+</script>
+</body>
+</html>
